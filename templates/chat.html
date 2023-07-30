@@ -1,0 +1,111 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %} Home {% endblock title %}
+{% block c_active %} active {% endblock c_active %}
+
+
+{% block body %}
+
+
+    <section>
+        <h1 style="text-align: center; color:red;" class="mt-4">Web Socket</h1>
+        {% include 'message.html' %}
+
+        <h2>Group Name : {{group_name}}</h2>
+
+
+        <textarea name="chat_log" id="chat_log" cols="100" rows="15">
+            {% for chat in chats %}
+                {{chat.user.username}} : {{chat.content}}
+            {% endfor %}
+        </textarea>
+
+
+
+        <input type="text" id="chat-message-input" size="100"><br>
+        <input class="mt-3 mb-3" type="button" value="send" id="chat-message-submit">
+
+
+        <!-- এর মধ্যমে group_name কে Javascripts এ send করা হয়েছে -->
+        {{group_name|json_script:"group-name" }}
+    </section>
+
+
+
+
+
+    <script>
+
+            // HTML থেকে যে group_name টি কে send করা হয়েছে তা এখানে receive করা হয়েছে,
+            const groupName = JSON.parse(document.getElementById('group-name').textContent)
+            console.log(groupName)
+    
+    
+            // AsyncConsumer এর Data দেখাতে চাইলে URL = ( ws://127.0.0.1:8000/ws/ac/ )
+            // var ws = new WebSocket('ws://127.0.0.1:8000/ws/wsc/');  
+            // var ws = new WebSocket('ws://127.0.0.1:8000/ws/awsc/');  
+            var ws = new WebSocket(
+                'ws://'
+                + window.location.host
+                + '/ws/awsc/'
+                + groupName
+                + '/'
+                );  
+    
+            
+    
+            ws.onopen = function() {
+                console.log('Websocket connection open........')
+            }
+            
+    
+            ws.onmessage = function(event) {
+                // console.log('Received Message is = ', event)
+                // console.log('Received Message is = ', event['data'])
+                // console.log('Received Message Type = ', typeof(event['data'])) //string type তাই এটিকে Javascripts obj তে convert করতে হবে।
+    
+                const js_obj = JSON.parse(event.data) 
+
+                var a = JSON.parse(js_obj.msg);
+                // console.log("Data = ", typeof(a))
+                // console.log("Data = ", a)
+                
+                var msg = a.msg;
+                var user = a.user;
+
+                // console.log("msg =", msg);
+                // console.log("user =", user);   
+                document.querySelector('#chat_log').value += ( user + ":" + msg + '\n') 
+            }
+     
+    
+            ws.onerror = function() {
+                console.log('Websocket Error Occoured.......', event)
+            }
+    
+    
+            ws.onclose = function() {
+                console.log('Websocket connection is Closed.......', event)
+            }
+    
+    
+            document.getElementById('chat-message-submit').onclick = function(event){
+    
+                const messageInputDom = document.getElementById('chat-message-input')
+                const message = messageInputDom.value
+    
+                ws.send(JSON.stringify({
+                    'msg': message  // Obj কে Json String এ Convert করে send করা হয়েছে।
+                }))
+    
+                // message যখন চলে যাবে, তখন জেন input field টি খালি হয়
+                messageInputDom.value = ''
+            }
+    
+            
+            
+    
+    </script>
+
+
+{% endblock body %}

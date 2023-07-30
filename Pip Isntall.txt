@@ -1,0 +1,41 @@
+1. To Create requirements:
+
+    	pip3 freeze > requirements.txt 
+
+
+2. pip Upgrade: 
+
+	python.exe -m pip install --upgrade pip
+
+
+3. To Install requirements:
+
+	pip install -U -r requirements.txt
+
+4. Dump All data
+	
+	python manage.py dumpdata > backup.json
+	py manage.py dumpdata > backup.json
+
+5. Loaddat All data In Database
+
+	python manage.py loaddata backup.json
+
+
+6. virtualenvwrapper-win 1.2.7 install:
+
+	pip install virtualenvwrapper-win
+
+	ENV Create     -> mkvirtualenv <name>
+
+	ENV Activate   -> workon <name>
+
+	ENV Deactivate -> deactivate
+
+7. Sepcefic Django version install
+
+	pip install Django==4.1
+
+8. Django Uninstall 
+
+	pip uninstall Django

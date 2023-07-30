@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %} Home {% endblock title %}
+{% block h_active %} active {% endblock h_active %}
+
+{% block body %}
+
+{% if user.is_authenticated %}
+    <h1 class="mt-4">Name: {{user.get_full_name}}</h1>
+    {% include 'message.html' %}
+{% else %}
+    <h1 class="mt-4">Please login to access this page.</h1>
+    {% include 'message.html' %}
+{% endif %}
+
+
+{% endblock body %}
